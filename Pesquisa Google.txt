@@ -1,0 +1,65 @@
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class TesteTaking {
+
+	@Test
+	public void PesquisaFilme() {
+
+//		Captura as informações do diretor e do filme
+		Scanner entrada = new Scanner(System.in);
+		System.out.print("Informe o nome do diretor: ");
+		String nomediretor = entrada.nextLine();
+		while (nomediretor.length() < 1 ) {
+			System.out.println("O nome do diretor deve ser preenchido!");
+			System.out.print("Informe o nome do diretor: ");
+			nomediretor = entrada.nextLine();
+		}
+		System.out.print("Informe a data de nascimento do diretor: ");
+		String nascimento = entrada.nextLine();
+		System.out.print("Informe o nome do filme: ");
+		String nomefilme = entrada.nextLine();
+		while (nomefilme.length() < 1) {
+			System.out.print("O nome do filme deve ser preenchido! ");
+			System.out.print("Informe o nome do filme: ");
+			nomefilme = entrada.nextLine();
+		}
+		System.out.print("Informe a data de lançamento do filme: ");
+		String lancamento = entrada.nextLine();
+
+//		Armazena as informações capturadas na arraylist
+		ArrayList<String> filmes = new ArrayList<String>();
+		filmes.add(nomediretor);
+		filmes.add(nascimento);
+		filmes.add(nomefilme);
+		filmes.add(lancamento);
+
+//      Efetuar a pesquisa no google	
+		System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.get("http://www.google.com");
+		Assert.assertEquals("Google", driver.getTitle());
+		driver.findElement(By.name("q")).sendKeys(filmes.get(0) + ", " + filmes.get(2));
+		assertEquals(filmes.get(0) + ", " + filmes.get(2), driver.findElement(By.name("q")).getAttribute("value"));
+		driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+		driver.findElement(By.name("btnK")).click();
+
+//		Exibir a quantidade de resultados da pesquisa 
+		try {
+			System.out.println(driver.findElement(By.id("resultStats")).getText());
+		} catch (Exception erro) {
+			System.out.println("Sua pesquisa não retornou nenhum resultado");
+		}
+		driver.quit();
+	}
+
+}
